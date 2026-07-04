@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { Playfair_Display, Manrope } from "next/font/google";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { FaReact, FaNodeJs, FaBars, FaTimes, FaWhatsapp, FaExternalLinkAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -21,1031 +22,707 @@ import {
   SiLinkedin,
 } from "react-icons/si";
 import { TbApi } from "react-icons/tb";
-interface SmokeParticle {
+
+/* Editorial pairing: a serif display face carries the personality,
+   a quiet grotesque handles everything functional. */
+const serif = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
+const sans = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+});
+
+const NAV_LINKS = ["About", "Craft", "Work", "Contact"];
+
+const SKILL_GROUPS = [
+  {
+    title: "Frontend",
+    items: [
+      { name: "React.js", icon: <FaReact size={30} color="#61DAFB" /> },
+      { name: "Next.js", icon: <SiNextdotjs size={30} className="text-current" /> },
+      { name: "HTML5", icon: <SiHtml5 size={30} color="#E34C26" /> },
+      { name: "CSS3", icon: <SiCss3 size={30} color="#264DE4" /> },
+      { name: "JavaScript", icon: <SiJavascript size={30} color="#F7DF1E" /> },
+      { name: "Tailwind CSS", icon: <SiTailwindcss size={30} color="#06B6D4" /> },
+    ],
+  },
+  {
+    title: "Backend",
+    items: [
+      { name: "Node.js", icon: <FaNodeJs size={30} color="#68A063" /> },
+      { name: "Express.js", icon: <SiExpress size={30} className="text-current" /> },
+      { name: "Python", icon: <SiPython size={30} color="#3776AB" /> },
+      { name: "JWT Auth", icon: <SiJsonwebtokens size={30} color="#D63AFF" /> },
+    ],
+  },
+  {
+    title: "Database & API",
+    items: [
+      { name: "MongoDB", icon: <SiMongodb size={30} color="#47A248" /> },
+      { name: "MySQL", icon: <SiMysql size={30} color="#4479A1" /> },
+      { name: "REST API", icon: <TbApi size={30} color="#D4AF6A" /> },
+    ],
+  },
+  {
+    title: "Tools",
+    items: [
+      { name: "GitHub", icon: <SiGithub size={30} className="text-current" /> },
+      { name: "Git", icon: <SiGit size={30} color="#F05032" /> },
+    ],
+  },
+];
+
+const PROJECTS = [
+  {
+    title: "Al-Saeed Foundation",
+    tag: "Charity Platform",
+    desc: "A full charity foundation website for education, healthcare, and social welfare — donation system, bilingual content (English/Urdu), school information, and a calm, trustworthy design for community outreach.",
+    tech: ["Next.js", "React", "Tailwind CSS"],
+    image: "/images/alsaeedfoundation.png",
+    link: "https://al-saeed-foundation.vercel.app/",
+  },
+  {
+    title: "Al-Saeed Admin Dashboard",
+    tag: "Admin System",
+    desc: "A full-stack admin panel for managing foundation data — secure login, role-based access, CRUD operations, data tables, and analytics for efficient content management.",
+    tech: ["React", "Node.js", "Express", "MongoDB", "JWT"],
+    image: "/images/alsaeed-adminportal.png",
+  },
+  {
+    title: "Little Mu'mins",
+    tag: "E-Commerce",
+    desc: "An e-commerce book shop for Islamic children's books — product catalog, cart system, category filters by age and type, and a warm, child-friendly design.",
+    tech: ["Next.js", "React", "E-commerce"],
+    image: "/images/littlemumins.png",
+    link: "https://little-mumins.vercel.app/",
+  },
+];
+
+const OTHER_REPOS = [
+  { url: "https://github.com/awiasjaved/alsaeed_back", company: false },
+  { url: "https://github.com/awiasjaved/alsaeed_portal", company: false },
+  { url: "https://github.com/awiasjaved/awais-Dev", company: false },
+  { url: "https://github.com/awiasjaved/ai-recruitment-platform-frontend", company: false },
+  { url: "https://github.com/awiasjaved/sohail-autos-toba", company: false },
+  { url: "https://github.com/awiasjaved/DevSpire", company: false },
+  { url: "https://github.com/awiasjaved/yaseen_backend", company: false },
+  { url: "https://github.com/awiasjaved/ALSaeed_Foundation", company: false },
+  { url: "https://github.com/awiasjaved/phrmacy_app", company: false },
+  { url: "https://github.com/awiasjaved/little_mumins", company: false },
+  { url: "https://github.com/awiasjaved/little_mumins_backend", company: false },
+  { url: "https://github.com/AdaxionTech/heyginie_backend", company: true },
+  { url: "https://github.com/AdaxionTech/partner_portal", company: true },
+];
+
+interface Glow {
   id: number;
   x: number;
   y: number;
-  size: number;
-  color: string;
-  driftX: number;
-  driftY: number;
 }
-
-const DARK_COLORS = [
-  "rgba(139,92,246,0.8)",
-  "rgba(59,130,246,0.8)",
-  "rgba(236,72,153,0.8)",
-  "rgba(16,185,129,0.8)",
-  "rgba(245,158,11,0.8)",
-  "rgba(239,68,68,0.8)",
-  "rgba(99,102,241,0.8)",
-  "rgba(20,184,166,0.8)",
-];
-
-const LIGHT_COLORS = [
-  "rgba(251,191,36,0.8)",
-  "rgba(249,115,22,0.8)",
-  "rgba(239,68,68,0.8)",
-  "rgba(16,185,129,0.8)",
-  "rgba(59,130,246,0.8)",
-  "rgba(236,72,153,0.8)",
-  "rgba(139,92,246,0.8)",
-  "rgba(20,184,166,0.8)",
-];
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [particles, setParticles] = useState<SmokeParticle[]>([]);
-  const [cursor, setCursor] = useState({ x: -100, y: -100 });
-  const [cursorColor, setCursorColor] = useState("rgba(139,92,246,1)");
-  const counterRef = useRef(0);
-  const lastPos = useRef({ x: 0, y: 0 });
-  const colorIndexRef = useRef(0);
+  const [spot, setSpot] = useState({ x: -400, y: -400 });
+  const [glows, setGlows] = useState<Glow[]>([]);
+  const glowCounter = useRef(0);
+  const lastGlow = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    if (darkMode) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, [darkMode]);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      setCursor({ x: e.clientX, y: e.clientY });
-
-      const dx = e.clientX - lastPos.current.x;
-      const dy = e.clientY - lastPos.current.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 8) return;
-      lastPos.current = { x: e.clientX, y: e.clientY };
-
-      const colors = darkMode ? DARK_COLORS : LIGHT_COLORS;
-      const count = Math.floor(Math.random() * 2) + 2;
-      const newParticles: SmokeParticle[] = [];
-
-      for (let i = 0; i < count; i++) {
-        const color = colors[colorIndexRef.current % colors.length];
-        colorIndexRef.current++;
-        newParticles.push({
-          id: counterRef.current++,
-          x: e.clientX + (Math.random() - 0.5) * 20,
-          y: e.clientY + (Math.random() - 0.5) * 20,
-          size: Math.random() * 55 + 25,
-          color,
-          driftX: (Math.random() - 0.5) * 100,
-          driftY: -(Math.random() * 110 + 40),
-        });
-      }
-
-      setCursorColor(
-        colors[colorIndexRef.current % colors.length].replace(
-          /[\d.]+\)$/,
-          "1)",
-        ),
-      );
-      setParticles((prev) => [...prev.slice(-60), ...newParticles]);
-    },
-    [darkMode],
-  );
-
-  const removeParticle = useCallback((id: number) => {
-    setParticles((prev) => prev.filter((p) => p.id !== id));
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setSpot({ x: e.clientX, y: e.clientY });
+    const dx = e.clientX - lastGlow.current.x;
+    const dy = e.clientY - lastGlow.current.y;
+    if (Math.sqrt(dx * dx + dy * dy) < 40) return;
+    lastGlow.current = { x: e.clientX, y: e.clientY };
+    const id = glowCounter.current++;
+    setGlows((prev) => [...prev.slice(-8), { id, x: e.clientX, y: e.clientY }]);
   }, []);
+
+  const removeGlow = useCallback((id: number) => {
+    setGlows((prev) => prev.filter((g) => g.id !== id));
+  }, []);
+
+  const gold = darkMode ? "#D4AF6A" : "#9C7A32";
+  const bg = darkMode ? "bg-[#0B0A08]" : "bg-[#FAF7F0]";
+  const textMain = darkMode ? "text-[#F3EEE3]" : "text-[#1C1710]";
+  const textMuted = darkMode ? "text-[#B9AFA0]" : "text-[#5C5344]";
+  const panel = darkMode ? "bg-[#141210]" : "bg-white";
+  const panelBorder = darkMode ? "border-[#2C2620]" : "border-[#E7DFCE]";
 
   return (
     <main
       onMouseMove={handleMouseMove}
-      className={`min-h-screen overflow-x-hidden transition-colors duration-500 relative cursor-none ${
-        darkMode
-          ? "bg-gradient-to-br from-black via-gray-900 to-black text-white"
-          : "bg-gradient-to-br from-white via-gray-100 to-white text-gray-900"
-      }`}
+      className={`${serif.variable} ${sans.variable} font-[family-name:var(--font-sans)] min-h-screen relative overflow-x-hidden transition-colors duration-500 ${bg} ${textMain}`}
     >
-      {/* CUSTOM CURSOR */}
+      {/* Ambient spotlight following the cursor */}
       <div
+        className="fixed inset-0 pointer-events-none z-30 transition-opacity duration-300"
         style={{
-          position: "fixed",
-          left: cursor.x - 16,
-          top: cursor.y - 16,
-          width: 32,
-          height: 32,
-          borderRadius: "50%",
-          border: `2.5px solid ${cursorColor}`,
-          boxShadow: `0 0 12px ${cursorColor}, 0 0 24px ${cursorColor}`,
-          background: cursorColor.replace(/[\d.]+\)$/, "0.15)"),
-          pointerEvents: "none",
-          zIndex: 9999,
-          transition: "border-color 0.2s, box-shadow 0.2s, background 0.2s",
+          background: `radial-gradient(600px circle at ${spot.x}px ${spot.y}px, ${
+            darkMode ? "rgba(212,175,106,0.08)" : "rgba(156,122,50,0.10)"
+          }, transparent 70%)`,
         }}
       />
 
-      {/* SMOKE PARTICLES */}
-      <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
+      {/* Faint gold trail sparks */}
+      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
         <AnimatePresence>
-          {particles.map((p) => (
+          {glows.map((g) => (
             <motion.div
-              key={p.id}
-              initial={{
-                opacity: 0.95,
-                scale: 0.3,
-                x: p.x - p.size / 2,
-                y: p.y - p.size / 2,
-              }}
-              animate={{
-                opacity: 0,
-                scale: 4,
-                x: p.x - p.size / 2 + p.driftX,
-                y: p.y - p.size / 2 + p.driftY,
-              }}
+              key={g.id}
+              initial={{ opacity: 0.6, scale: 0.4 }}
+              animate={{ opacity: 0, scale: 1.6, y: g.y - 30 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-              onAnimationComplete={() => removeParticle(p.id)}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+              onAnimationComplete={() => removeGlow(g.id)}
               style={{
                 position: "fixed",
-                left: 0,
-                top: 0,
-                width: p.size,
-                height: p.size,
+                left: g.x - 2,
+                top: g.y - 2,
+                width: 4,
+                height: 4,
                 borderRadius: "50%",
-                background: `radial-gradient(circle at 40% 40%, ${p.color} 0%, transparent 70%)`,
-                filter: "blur(10px)",
-                pointerEvents: "none",
+                background: gold,
+                boxShadow: `0 0 8px ${gold}`,
               }}
             />
           ))}
         </AnimatePresence>
       </div>
 
-      
+      {/* Ambient gradient orbs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div
+          className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20"
+          style={{ background: gold }}
+        />
+        <div
+          className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full blur-[130px] opacity-10"
+          style={{ background: darkMode ? "#8B6D3F" : "#D4AF6A" }}
+        />
+      </div>
 
-       {/* NAVBAR — Pill style like screenshot */}
-      <div className="fixed top-0 left-0 w-full z-50 px-4 md:px-6 pt-5">
+      {/* NAVBAR */}
+      <div className="fixed top-0 left-0 w-full z-50 px-5 md:px-10 pt-6">
         <nav
-          className={`max-w-6xl mx-auto rounded-2xl border px-4 md:px-8 py-4 flex items-center justify-between transition-all duration-500 backdrop-blur-xl ${
-            darkMode
-              ? "bg-[#0e0e0e]/90 border-white/10 shadow-[0_4px_40px_rgba(0,0,0,0.7)]"
-              : "bg-white/90 border-black/10 shadow-[0_4px_40px_rgba(0,0,0,0.1)]"
+          className={`max-w-6xl mx-auto rounded-full border backdrop-blur-xl px-6 md:px-10 py-4 flex items-center justify-between ${panelBorder} ${
+            darkMode ? "bg-[#0B0A08]/70" : "bg-white/70"
           }`}
         >
-          {/* NAME */}
-          <h1
-            className={`text-sm md:text-base font-bold tracking-[0.2em] uppercase ${
-              darkMode ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Muhammad Awais
-          </h1>
+          <span className="font-[family-name:var(--font-serif)] italic text-lg md:text-xl tracking-wide">
+            H. Amir Saeed
+          </span>
 
-          {/* DESKTOP NAV LINKS + DARK MODE TOGGLE */}
-          <div className="hidden md:flex items-center gap-8">
-            {["ABOUT", "TECHNOLOGIES", "PROJECTS", "CONTACT"].map((link) => (
+          <div className="hidden md:flex items-center gap-10">
+            {NAV_LINKS.map((link) => (
               <a
                 key={link}
-                href={`#${link}`}
-                className={`text-xs font-semibold tracking-[0.15em] transition-colors duration-300 relative group ${
-                  darkMode
-                    ? "text-gray-400 hover:text-white"
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
+                href={`#${link.toUpperCase()}`}
+                className={`text-xs font-semibold tracking-[0.2em] uppercase transition-colors duration-300 ${textMuted} hover:text-[${gold}]`}
+                style={{ ["--hover-color" as string]: gold }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = gold)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "")}
               >
                 {link}
-                <span
-                  className={`absolute -bottom-0.5 left-0 w-full h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full ${
-                    darkMode ? "bg-violet-400" : "bg-orange-400"
-                  }`}
-                />
               </a>
             ))}
-
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`relative w-14 h-7 rounded-full transition-colors duration-500 focus:outline-none shadow-md border cursor-pointer flex-shrink-0 ${
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-yellow-300 border-yellow-400"
-              }`}
-              aria-label="Toggle Dark Mode"
+              aria-label="Toggle theme"
+              className={`w-11 h-6 rounded-full border relative transition-colors ${panelBorder}`}
+              style={{ background: darkMode ? "#241F19" : "#F0E9D8" }}
             >
               <span
-                className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all duration-500 shadow-md ${
-                  darkMode
-                    ? "translate-x-7 bg-indigo-500"
-                    : "translate-x-0 bg-white"
-                }`}
-              >
-                {darkMode ? "🌙" : "☀️"}
-              </span>
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-all duration-300"
+                style={{
+                  left: darkMode ? "22px" : "2px",
+                  background: gold,
+                }}
+              />
             </button>
           </div>
 
-          {/* MOBILE — DARK MODE + MENU BUTTON */}
           <div className="flex md:hidden items-center gap-3">
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`relative w-12 h-6 rounded-full transition-colors duration-500 focus:outline-none shadow-md border cursor-pointer flex-shrink-0 ${
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-yellow-300 border-yellow-400"
-              }`}
-              aria-label="Toggle Dark Mode"
+              aria-label="Toggle theme"
+              className={`w-10 h-6 rounded-full border relative ${panelBorder}`}
+              style={{ background: darkMode ? "#241F19" : "#F0E9D8" }}
             >
               <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] transition-all duration-500 shadow-md ${
-                  darkMode
-                    ? "translate-x-6 bg-indigo-500"
-                    : "translate-x-0 bg-white"
-                }`}
-              >
-                {darkMode ? "🌙" : "☀️"}
-              </span>
+                className="absolute top-0.5 w-5 h-5 rounded-full transition-all duration-300"
+                style={{ left: darkMode ? "18px" : "2px", background: gold }}
+              />
             </button>
-
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                darkMode
-                  ? "text-white hover:bg-white/10"
-                  : "text-gray-900 hover:bg-black/5"
-              }`}
-              aria-label="Toggle menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
+              {mobileMenuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
             </button>
           </div>
         </nav>
 
-        {/* MOBILE MENU DROPDOWN */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -8, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: "auto" }}
-              exit={{ opacity: 0, y: -8, height: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className={`md:hidden max-w-6xl mx-auto mt-2 rounded-2xl border overflow-hidden backdrop-blur-xl ${
-                darkMode
-                  ? "bg-[#0e0e0e]/95 border-white/10 shadow-[0_4px_40px_rgba(0,0,0,0.7)]"
-                  : "bg-white/95 border-black/10 shadow-[0_4px_40px_rgba(0,0,0,0.1)]"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className={`md:hidden max-w-6xl mx-auto mt-2 rounded-2xl border backdrop-blur-xl overflow-hidden ${panelBorder} ${
+                darkMode ? "bg-[#0B0A08]/90" : "bg-white/90"
               }`}
             >
-              <div className="flex flex-col py-2">
-                {["ABOUT", "TECHNOLOGIES", "PROJECTS", "CONTACT"].map(
-                  (link) => (
-                    <a
-                      key={link}
-                      href={`#${link}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`px-6 py-3 text-sm font-semibold tracking-[0.15em] transition-colors duration-300 ${
-                        darkMode
-                          ? "text-gray-400 hover:text-white hover:bg-white/5"
-                          : "text-gray-500 hover:text-gray-900 hover:bg-black/5"
-                      }`}
-                    >
-                      {link}
-                    </a>
-                  ),
-                )}
-              </div>
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link}
+                  href={`#${link.toUpperCase()}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-6 py-3 text-sm font-semibold tracking-widest uppercase ${textMuted}`}
+                >
+                  {link}
+                </a>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-      {/* HERO */}
-      <section className="flex flex-col justify-center px-6 py-28 md:py-32 max-w-6xl mx-auto">
-        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-12 md:gap-16">
-          {/* TEXT CONTENT */}
-          <div className="flex-1 text-center md:text-left order-2 md:order-1">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight ${
-                darkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Muhammad{" "}
-              <span
-                className={
-                  darkMode
-                    ? "bg-gradient-to-r from-violet-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent"
-                    : "bg-gradient-to-r from-violet-600 via-orange-500 to-pink-600 bg-clip-text text-transparent"
-                }
-              >
-                Awais
-              </span>
-            </motion.h1>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 40 }}
+      {/* HERO */}
+      <section className="relative z-10 px-6 pt-40 pb-24 md:pt-52 md:pb-32 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-[1.3fr_0.7fr] gap-14 items-center">
+          <div className="text-center md:text-left">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.15 }}
-              className={`text-xl md:text-2xl lg:text-3xl mb-6 font-medium ${
-                darkMode ? "text-gray-300" : "text-gray-600"
-              }`}
+              transition={{ duration: 0.7 }}
+              className="uppercase text-xs md:text-sm tracking-[0.35em] font-semibold mb-6"
+              style={{ color: gold }}
             >
               MERN Stack Developer
-            </motion.h2>
+            </motion.p>
 
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-              className={`h-1 w-24 md:w-32 mb-6 mx-auto md:mx-0 rounded-full ${
-                darkMode
-                  ? "bg-gradient-to-r from-violet-400 to-cyan-400"
-                  : "bg-gradient-to-r from-violet-600 to-orange-500"
-              }`}
-            />
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.1 }}
+              className="font-[family-name:var(--font-serif)] font-semibold leading-[1.05] text-5xl sm:text-6xl md:text-7xl mb-6"
+            >
+              Hafiz Muhammad
+              <br />
+              <span className="italic" style={{ color: gold }}>
+                Amir Saeed
+              </span>
+            </motion.h1>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 1 }}
-              className={`text-base md:text-lg leading-relaxed max-w-xl mx-auto md:mx-0 ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
+              transition={{ delay: 0.4, duration: 1 }}
+              className={`max-w-xl mx-auto md:mx-0 text-base md:text-lg leading-relaxed ${textMuted}`}
             >
-              I build modern, scalable and high-performance web applications
-              using React, Next.js, Node.js and MongoDB.
+              I design and build refined, high-performance web applications
+              with React, Next.js, Node.js and MongoDB — where craftsmanship
+              meets clean engineering.
             </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.7 }}
+              className="flex flex-wrap gap-4 mt-10 justify-center md:justify-start"
+            >
+              <a
+                href="#WORK"
+                className="px-8 py-3.5 rounded-full text-sm font-semibold tracking-wide transition-transform hover:-translate-y-0.5"
+                style={{ background: gold, color: darkMode ? "#0B0A08" : "#FAF7F0" }}
+              >
+                View my work
+              </a>
+              <a
+                href="#CONTACT"
+                className={`px-8 py-3.5 rounded-full text-sm font-semibold tracking-wide border transition-transform hover:-translate-y-0.5 ${panelBorder}`}
+              >
+                Get in touch
+              </a>
+            </motion.div>
           </div>
 
-          {/* PROFILE IMAGE */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.85, x: 30 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
-            className="relative flex-shrink-0 order-1 md:order-2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+            className="relative mx-auto"
           >
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="relative"
+            <div
+              className="absolute inset-0 rounded-[2rem] blur-2xl opacity-30 scale-105"
+              style={{ background: gold }}
+            />
+            <div
+              className={`relative rounded-[2rem] border p-2 ${panelBorder} ${panel}`}
+              style={{ boxShadow: `0 30px 60px -20px ${darkMode ? "rgba(0,0,0,0.6)" : "rgba(156,122,50,0.25)"}` }}
             >
-              <div
-                className="absolute -inset-3 rounded-full blur-2xl opacity-50"
-                style={{
-                  background: darkMode
-                    ? "linear-gradient(135deg, #8b5cf6, #06b6d4, #ec4899)"
-                    : "linear-gradient(135deg, #7c3aed, #f97316, #db2777)",
-                }}
+              <Image
+                src="/images/awais-Dev.png"
+                alt="Hafiz Muhammad Amir Saeed - MERN Stack Developer"
+                width={340}
+                height={420}
+                priority
+                className="w-56 sm:w-64 md:w-full h-auto rounded-[1.6rem] object-cover object-top"
               />
-
-              <div
-                className={`relative p-1.5 rounded-full bg-gradient-to-br ${
-                  darkMode
-                    ? "from-violet-500 via-cyan-400 to-pink-500"
-                    : "from-violet-600 via-orange-500 to-pink-600"
-                } shadow-2xl`}
-              >
-                <div
-                  className={`rounded-full p-1 ${
-                    darkMode ? "bg-gray-900" : "bg-white"
-                  }`}
-                >
-                  <Image
-                    src="/images/awais-Dev.png"
-                    alt="Muhammad Awais - MERN Stack Developer"
-                    width={280}
-                    height={280}
-                    priority
-                    className="w-44 h-44 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full object-cover object-top"
-                  />
-                </div>
-              </div>
-
-              <div
-                className={`absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider whitespace-nowrap shadow-lg border ${
-                  darkMode
-                    ? "bg-gray-900/90 border-white/10 text-violet-300"
-                    : "bg-white/90 border-black/10 text-violet-700"
-                }`}
-              >
-                Available for Work
-              </div>
-            </motion.div>
+            </div>
+            <div
+              className={`absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap px-5 py-2 rounded-full text-xs font-semibold tracking-widest uppercase border ${panelBorder} ${panel}`}
+              style={{ color: gold }}
+            >
+              Available for Work
+            </div>
           </motion.div>
         </div>
       </section>
 
+      {/* Thin gold divider */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="h-px w-full" style={{ background: `linear-gradient(to right, transparent, ${gold}, transparent)` }} />
+      </div>
+
       {/* ABOUT */}
-      <section id="ABOUT" className="scroll-mt-28 px-6 py-20 md:py-24">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+      <section id="ABOUT" className="relative z-10 scroll-mt-28 px-6 py-24 md:py-28 max-w-6xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="uppercase text-xs tracking-[0.35em] font-semibold mb-4 text-center md:text-left"
+          style={{ color: gold }}
+        >
+          About
+        </motion.p>
+        <div className="grid md:grid-cols-2 gap-14 items-start">
+          <motion.h3
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-center mb-12"
+            className="font-[family-name:var(--font-serif)] text-3xl md:text-4xl font-semibold leading-snug"
           >
-            <h3 className="text-3xl md:text-4xl font-semibold mb-4">About Me</h3>
-            <div
-              className={`h-1 w-20 mx-auto rounded-full ${
-                darkMode
-                  ? "bg-gradient-to-r from-violet-400 to-cyan-400"
-                  : "bg-gradient-to-r from-violet-600 to-orange-500"
-              }`}
-            />
-          </motion.div>
+            Building digital products that feel as good as they work.
+          </motion.h3>
 
-          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className={`space-y-5 text-base md:text-lg leading-relaxed ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              <p>
-                Hi, I&apos;m{" "}
-                <span
-                  className={`font-semibold ${
-                    darkMode ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Muhammad Awais
-                </span>
-                , a passionate MERN Stack Developer focused on building modern,
-                scalable, and high-performance web applications. I enjoy turning
-                ideas into clean, user-friendly digital products that solve
-                real-world problems.
-              </p>
-              <p>
-                I work across the full stack — from responsive frontends with
-                React &amp; Next.js to robust backends using Node.js, Express,
-                and MongoDB. I have hands-on experience with REST APIs, JWT
-                authentication, admin dashboards, and e-commerce solutions.
-                I&apos;m always learning new tools and best practices to deliver
-                better results.
-              </p>
-              <p
-                className={`font-medium ${
-                  darkMode ? "text-violet-300" : "text-violet-700"
-                }`}
-              >
-                Currently open to freelance projects and full-time opportunities.
-              </p>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className={`space-y-5 text-base leading-relaxed ${textMuted}`}
+          >
+            <p>
+              I&apos;m <span className={`font-semibold ${textMain}`}>Hafiz Muhammad Amir Saeed</span>, a
+              MERN Stack Developer focused on building modern, scalable, and
+              high-performance web applications. I enjoy turning ideas into
+              clean, considered digital products that solve real-world
+              problems.
+            </p>
+            <p>
+              I work across the full stack — from responsive frontends with
+              React &amp; Next.js to robust backends using Node.js, Express,
+              and MongoDB, with hands-on experience in REST APIs, JWT
+              authentication, admin dashboards, and e-commerce solutions.
+            </p>
+            <p className="font-semibold" style={{ color: gold }}>
+              Currently open to freelance projects and full-time opportunities.
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="grid grid-cols-2 gap-4"
-            >
+            <div className="grid grid-cols-2 gap-4 pt-4">
               {[
                 { label: "Stack", value: "MERN" },
                 { label: "Focus", value: "Full-Stack" },
                 { label: "Build", value: "Web Apps" },
                 { label: "Status", value: "Available" },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className={`backdrop-blur-lg border p-5 rounded-2xl text-center shadow-lg transition-colors duration-500 ${
-                    darkMode
-                      ? "bg-white/10 border-white/20"
-                      : "bg-black/5 border-black/10"
-                  }`}
-                >
-                  <p
-                    className={`text-xs font-semibold tracking-widest uppercase mb-2 ${
-                      darkMode ? "text-gray-500" : "text-gray-400"
-                    }`}
-                  >
-                    {item.label}
-                  </p>
-                  <p
-                    className={`text-lg font-bold ${
-                      darkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {item.value}
-                  </p>
+                <div key={item.label} className={`rounded-2xl border p-4 text-center ${panelBorder} ${panel}`}>
+                  <p className={`text-[10px] tracking-widest uppercase mb-1 ${textMuted}`}>{item.label}</p>
+                  <p className="font-[family-name:var(--font-serif)] font-semibold text-lg">{item.value}</p>
                 </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* TECHNOLOGIES */}
-      <section
-        id="TECHNOLOGIES"
-        className={`scroll-mt-28 px-6 py-20 md:py-24 transition-colors duration-500 ${
-          darkMode ? "bg-black/30" : "bg-black/5"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-6"
-          >
-            <h3 className="text-3xl md:text-4xl font-semibold mb-4">
-              Technologies
-            </h3>
-            <div
-              className={`h-1 w-20 mx-auto rounded-full mb-6 ${
-                darkMode
-                  ? "bg-gradient-to-r from-violet-400 to-cyan-400"
-                  : "bg-gradient-to-r from-violet-600 to-orange-500"
-              }`}
-            />
-            <p
-              className={`max-w-2xl mx-auto text-base md:text-lg ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              Tools and technologies I use to build fast, scalable, and
-              modern web applications.
-            </p>
-          </motion.div>
-
-          <div className="space-y-12 mt-12">
-            {[
-              {
-                title: "Frontend",
-                skills: [
-                  { name: "React.js", icon: <FaReact size={36} color="#61DAFB" /> },
-                  {
-                    name: "Next.js",
-                    icon: (
-                      <SiNextdotjs
-                        size={36}
-                        className={darkMode ? "text-white" : "text-black"}
-                      />
-                    ),
-                  },
-                  { name: "HTML5", icon: <SiHtml5 size={36} color="#E34C26" /> },
-                  { name: "CSS3", icon: <SiCss3 size={36} color="#264DE4" /> },
-                  { name: "JavaScript", icon: <SiJavascript size={36} color="#F7DF1E" /> },
-                  { name: "Tailwind CSS", icon: <SiTailwindcss size={36} color="#06B6D4" /> },
-                ],
-              },
-              {
-                title: "Backend",
-                skills: [
-                  { name: "Node.js", icon: <FaNodeJs size={36} color="#68A063" /> },
-                  {
-                    name: "Express.js",
-                    icon: (
-                      <SiExpress
-                        size={36}
-                        className={darkMode ? "text-white" : "text-gray-800"}
-                      />
-                    ),
-                  },
-                  { name: "Python", icon: <SiPython size={36} color="#3776AB" /> },
-                  { name: "JWT Auth", icon: <SiJsonwebtokens size={36} color="#D63AFF" /> },
-                ],
-              },
-              {
-                title: "Database & API",
-                skills: [
-                  { name: "MongoDB", icon: <SiMongodb size={36} color="#47A248" /> },
-                  { name: "MySQL", icon: <SiMysql size={36} color="#4479A1" /> },
-                  { name: "REST API", icon: <TbApi size={36} color="#F97316" /> },
-                  {
-                    name: "API Integration",
-                    icon: (
-                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"
-                          stroke="#38BDF8"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    ),
-                  },
-                ],
-              },
-              {
-                title: "Tools",
-                skills: [
-                  { name: "GitHub", icon: <SiGithub size={36} color="#333" /> },
-                  { name: "Git", icon: <SiGit size={36} color="#333" /> },
-                ],
-              },
-            ].map((group, groupIndex) => (
-              <motion.div
-                key={group.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: groupIndex * 0.1 }}
-              >
-                <h4
-                  className={`text-lg font-semibold mb-6 tracking-wide ${
-                    darkMode ? "text-violet-300" : "text-violet-700"
-                  }`}
-                >
-                  {group.title}
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {group.skills.map((skill) => (
-                    <motion.div
-                      key={skill.name}
-                      whileHover={{ scale: 1.05, y: -4 }}
-                      className={`backdrop-blur-lg border p-5 rounded-2xl text-center shadow-lg transition-colors duration-500 flex flex-col items-center gap-3 ${
-                        darkMode
-                          ? "bg-white/10 border-white/20 hover:border-violet-400/40"
-                          : "bg-white border-black/10 hover:border-violet-400/40"
-                      }`}
-                    >
-                      {skill.icon}
-                      <span className="text-sm font-medium">{skill.name}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PROJECTS */}
-      <section
-        id="PROJECTS"
-        className={`scroll-mt-28 px-6 py-20 md:py-24 transition-colors duration-500 ${
-          darkMode ? "bg-black/40" : "bg-black/5"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="text-center mb-12"
-          >
-            <h3 className="text-3xl md:text-4xl font-semibold mb-4">Projects</h3>
-            <div
-              className={`h-1 w-20 mx-auto rounded-full mb-6 ${
-                darkMode
-                  ? "bg-gradient-to-r from-violet-400 to-cyan-400"
-                  : "bg-gradient-to-r from-violet-600 to-orange-500"
-              }`}
-            />
-            <p
-              className={`max-w-2xl mx-auto text-base md:text-lg ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              A selection of projects I&apos;ve built — focused on real-world
-              functionality, clean code, and great user experience.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              {
-                title: "Al-Saeed Foundation",
-                desc: "A full charity foundation website for education, healthcare, and social welfare. Features donation system, bilingual content (English/Urdu), school information, and responsive design for community outreach.",
-                tech: ["Next.js", "React", "Tailwind CSS", "Responsive"],
-                image: "/images/alsaeedfoundation.png",
-                link: "https://al-saeed-foundation.vercel.app/",
-                badge: "Live Project",
-              },
-              {
-                title: "Al-Saeed Admin Dashboard",
-                desc: "A full-stack admin panel for managing foundation data with secure login, role-based access, CRUD operations, data tables, and analytics for efficient content and user management.",
-                tech: ["React", "Node.js", "Express", "MongoDB", "JWT"],
-                image: "/images/alsaeed-adminportal.png",
-                badge: "Admin Dashboard",
-              },
-              {
-                title: "Little Mu'mins",
-                desc: "An e-commerce book shop for Islamic children's books with product catalog, cart system, category filters by age and type, and a warm, child-friendly design for nurturing young hearts.",
-                tech: ["Next.js", "React", "E-commerce", "Responsive"],
-                image: "/images/littlemumins.png",
-                link: "https://little-mumins.vercel.app/",
-                badge: "Live Project",
-              },
-            ].map((project, index) => {
-              const cardClass = `backdrop-blur-xl border rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 flex flex-col w-full ${
-                project.link ? "cursor-pointer" : ""
-              } ${
-                darkMode
-                  ? "bg-white/10 border-white/20 hover:border-violet-400/30"
-                  : "bg-white border-black/10 hover:border-violet-400/30"
-              }`;
-
-              const cardContent = (
-                <>
-                  <div className="relative w-full aspect-video overflow-hidden group">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-t ${
-                        darkMode
-                          ? "from-black/70 via-black/20 to-transparent"
-                          : "from-black/50 via-black/10 to-transparent"
-                      }`}
-                    />
-                    {project.link && (
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/30">
-                        <span className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/95 text-gray-900 text-sm font-semibold shadow-lg">
-                          Visit Website
-                          <FaExternalLinkAlt size={12} />
-                        </span>
-                      </div>
-                    )}
-                    <span
-                      className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full ${
-                        darkMode
-                          ? "bg-violet-500/30 text-violet-200 backdrop-blur-sm"
-                          : "bg-white/90 text-violet-700"
-                      }`}
-                    >
-                      {project.badge}
-                    </span>
-                  </div>
-
-                  <div className="p-6 md:p-8 flex flex-col flex-1">
-                    <h4 className="text-xl md:text-2xl font-bold mb-3">
-                      {project.title}
-                    </h4>
-
-                    <p
-                      className={`mb-5 leading-relaxed flex-1 text-sm md:text-base ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      {project.desc}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech.map((tag) => (
-                        <span
-                          key={tag}
-                          className={`text-xs font-medium px-3 py-1 rounded-full ${
-                            darkMode
-                              ? "bg-white/10 text-gray-300 border border-white/10"
-                              : "bg-black/5 text-gray-700 border border-black/10"
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              );
-
-              return project.link ? (
-                <motion.a
-                  key={project.title}
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.15 }}
-                  whileHover={{ y: -6 }}
-                  className={cardClass}
-                >
-                  {cardContent}
-                </motion.a>
-              ) : (
-                <motion.div
-                  key={project.title}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.15 }}
-                  whileHover={{ y: -6 }}
-                  className={cardClass}
-                >
-                  {cardContent}
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className={`mt-12 rounded-2xl border p-6 md:p-8 ${
-              darkMode ? "bg-white/5 border-white/10" : "bg-white border-black/10"
-            }`}
-          >
-            <h4
-              className={`text-xl md:text-2xl font-semibold mb-3 ${
-                darkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Additional GitHub Projects
-            </h4>
-            <p className={`mb-6 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-              Note: only `AdaxionTech` repositories are company projects. Others
-              are personal/collaboration repositories.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[
-                {
-                  url: "https://github.com/awiasjaved/alsaeed_back",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/alsaeed_portal",
-                  company: false,
-                },
-                { url: "https://github.com/awiasjaved/awais-Dev", company: false },
-                {
-                  url: "https://github.com/awiasjaved/ai-recruitment-platform-frontend",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/sohail-autos-toba",
-                  company: false,
-                },
-                { url: "https://github.com/awiasjaved/DevSpire", company: false },
-                {
-                  url: "https://github.com/awiasjaved/yaseen_backend",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/ALSaeed_Foundation",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/phrmacy_app",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/little_mumins",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/awiasjaved/little_mumins_backend",
-                  company: false,
-                },
-                {
-                  url: "https://github.com/AdaxionTech/heyginie_backend",
-                  company: true,
-                },
-                {
-                  url: "https://github.com/AdaxionTech/partner_portal",
-                  company: true,
-                },
-              ].map((repo) => (
-                <a
-                  key={repo.url}
-                  href={repo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`rounded-xl border px-3 py-2 text-sm transition-colors break-all ${
-                    darkMode
-                      ? "border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-violet-400/40"
-                      : "border-black/10 bg-black/5 text-gray-700 hover:text-gray-900 hover:border-violet-400/40"
-                  }`}
-                >
-                  {repo.url.replace("https://github.com/", "")}
-                  {repo.company ? " (Company)" : ""}
-                </a>
               ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* CONTACT */}
-      <section
-        id="CONTACT"
-        className={`scroll-mt-28 px-6 py-20 md:py-24 transition-colors duration-500 ${
-          darkMode ? "bg-black/30" : "bg-black/5"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="mb-12"
-          >
-            <h3 className="text-3xl md:text-4xl font-semibold mb-4">
-              Contact Me
-            </h3>
-            <div
-              className={`h-1 w-20 mx-auto rounded-full mb-6 ${
-                darkMode
-                  ? "bg-gradient-to-r from-violet-400 to-cyan-400"
-                  : "bg-gradient-to-r from-violet-600 to-orange-500"
-              }`}
-            />
-            <p
-              className={`max-w-2xl mx-auto text-base md:text-lg ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              Have a project in mind or want to collaborate? Feel free to reach
-              out — I&apos;m always open to discussing new opportunities.
-            </p>
-          </motion.div>
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="h-px w-full" style={{ background: `linear-gradient(to right, transparent, ${gold}, transparent)` }} />
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {[
-              {
-                label: "Email",
-                value: "muhammadawaisjaved388@gmail.com",
-                href: "mailto:muhammadawaisjaved388@gmail.com",
-                icon: <MdEmail size={32} className="text-red-500" />,
-              },
-              {
-                label: "GitHub",
-                value: "awiasjaved",
-                href: "https://github.com/awiasjaved",
-                icon: (
-                  <SiGithub
-                    size={32}
-                    className={darkMode ? "text-white" : "text-gray-900"}
-                  />
-                ),
-              },
-              {
-                label: "LinkedIn",
-                value: "Muhammad Awais",
-                href: "https://www.linkedin.com/in/muhammad-awais-436459222/",
-                icon: <SiLinkedin size={32} className="text-blue-500" />,
-              },
-              {
-                label: "WhatsApp",
-                value: "+92 305 7359818",
-                href: "https://wa.me/923057359818",
-                icon: <FaWhatsapp size={32} className="text-green-500" />,
-              },
-            ].map((contact, index) => (
-              <motion.a
-                key={contact.label}
-                href={contact.href}
-                target="_blank"
-                rel="noopener noreferrer"
+      {/* CRAFT / SKILLS */}
+      <section id="CRAFT" className="relative z-10 scroll-mt-28 px-6 py-24 md:py-28 max-w-6xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="uppercase text-xs tracking-[0.35em] font-semibold mb-4 text-center"
+          style={{ color: gold }}
+        >
+          Craft
+        </motion.p>
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="font-[family-name:var(--font-serif)] text-3xl md:text-4xl font-semibold text-center mb-16"
+        >
+          Tools of the trade
+        </motion.h3>
+
+        <div className="space-y-14">
+          {SKILL_GROUPS.map((group, gi) => (
+            <motion.div
+              key={group.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: gi * 0.08 }}
+            >
+              <h4 className="font-[family-name:var(--font-serif)] italic text-xl mb-6" style={{ color: gold }}>
+                {group.title}
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {group.items.map((skill) => (
+                  <motion.div
+                    key={skill.name}
+                    whileHover={{ y: -5 }}
+                    className={`rounded-2xl border p-5 flex flex-col items-center gap-3 text-center transition-colors ${panelBorder} ${panel}`}
+                  >
+                    {skill.icon}
+                    <span className="text-sm font-medium">{skill.name}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="h-px w-full" style={{ background: `linear-gradient(to right, transparent, ${gold}, transparent)` }} />
+      </div>
+
+      {/* WORK / PROJECTS */}
+      <section id="WORK" className="relative z-10 scroll-mt-28 px-6 py-24 md:py-28 max-w-6xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="uppercase text-xs tracking-[0.35em] font-semibold mb-4 text-center"
+          style={{ color: gold }}
+        >
+          Selected Work
+        </motion.p>
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="font-[family-name:var(--font-serif)] text-3xl md:text-4xl font-semibold text-center mb-16"
+        >
+          A few things I&apos;ve built
+        </motion.h3>
+
+        <div className="space-y-10">
+          {PROJECTS.map((project, index) => {
+            const reversed = index % 2 === 1;
+            const Wrapper = project.link ? motion.a : motion.div;
+            return (
+              <Wrapper
+                key={project.title}
+                {...(project.link
+                  ? { href: project.link, target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className={`backdrop-blur-lg border p-6 rounded-2xl shadow-lg transition-colors duration-500 flex flex-col items-center gap-3 text-center ${
-                  darkMode
-                    ? "bg-white/10 border-white/20 hover:border-violet-400/40"
-                    : "bg-white border-black/10 hover:border-violet-400/40"
+                transition={{ duration: 0.7, delay: 0.05 * index }}
+                whileHover={{ y: -4 }}
+                className={`group grid md:grid-cols-2 gap-8 items-center rounded-3xl border p-4 md:p-6 transition-colors ${panelBorder} ${panel} ${
+                  project.link ? "cursor-pointer" : ""
                 }`}
               >
-                <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center ${
-                    darkMode ? "bg-white/5" : "bg-black/5"
-                  }`}
-                >
-                  {contact.icon}
+                <div className={`relative aspect-video rounded-2xl overflow-hidden ${reversed ? "md:order-2" : ""}`}>
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {project.link && (
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40">
+                      <span
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold"
+                        style={{ background: gold, color: darkMode ? "#0B0A08" : "#FAF7F0" }}
+                      >
+                        Visit live site <FaExternalLinkAlt size={11} />
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <p
-                  className={`text-sm font-semibold tracking-wide uppercase ${
-                    darkMode ? "text-violet-300" : "text-violet-700"
-                  }`}
-                >
-                  {contact.label}
-                </p>
-                <p
-                  className={`text-xs md:text-sm break-all ${
-                    darkMode ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  {contact.value}
-                </p>
-              </motion.a>
+
+                <div className={reversed ? "md:order-1" : ""}>
+                  <span
+                    className="inline-block text-[11px] font-semibold tracking-widest uppercase mb-3 px-3 py-1 rounded-full border"
+                    style={{ color: gold, borderColor: gold }}
+                  >
+                    {project.tag}
+                  </span>
+                  <h4 className="font-[family-name:var(--font-serif)] text-2xl font-semibold mb-3">
+                    {project.title}
+                  </h4>
+                  <p className={`text-sm md:text-base leading-relaxed mb-4 ${textMuted}`}>{project.desc}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((t) => (
+                      <span
+                        key={t}
+                        className={`text-xs font-medium px-3 py-1 rounded-full border ${panelBorder} ${textMuted}`}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Wrapper>
+            );
+          })}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className={`mt-10 rounded-3xl border p-6 md:p-8 ${panelBorder} ${panel}`}
+        >
+          <h4 className="font-[family-name:var(--font-serif)] text-xl font-semibold mb-3">
+            Additional GitHub Projects
+          </h4>
+          <p className={`mb-6 text-sm ${textMuted}`}>
+            Note: only `AdaxionTech` repositories are company projects. Others
+            are personal/collaboration repositories.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {OTHER_REPOS.map((repo) => (
+              <a
+                key={repo.url}
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`rounded-xl border px-3 py-2 text-sm transition-colors break-all ${panelBorder} ${textMuted} hover:text-current`}
+                style={{ ["--hover" as string]: gold }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = gold)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "")}
+              >
+                {repo.url.replace("https://github.com/", "")}
+                {repo.company ? " (Company)" : ""}
+              </a>
             ))}
           </div>
+        </motion.div>
+      </section>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className={`mt-12 text-sm ${
-              darkMode ? "text-gray-500" : "text-gray-500"
-            }`}
-          >
-            Let&apos;s build something amazing together.
-          </motion.p>
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="h-px w-full" style={{ background: `linear-gradient(to right, transparent, ${gold}, transparent)` }} />
+      </div>
+
+      {/* CONTACT */}
+      <section id="CONTACT" className="relative z-10 scroll-mt-28 px-6 py-24 md:py-32 max-w-6xl mx-auto text-center">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="uppercase text-xs tracking-[0.35em] font-semibold mb-4"
+          style={{ color: gold }}
+        >
+          Contact
+        </motion.p>
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="font-[family-name:var(--font-serif)] text-3xl md:text-5xl font-semibold mb-6"
+        >
+          Let&apos;s create something <span className="italic" style={{ color: gold }}>timeless</span>.
+        </motion.h3>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className={`max-w-xl mx-auto text-base md:text-lg mb-14 ${textMuted}`}
+        >
+          Have a project in mind or want to collaborate? I&apos;m always open
+          to discussing new opportunities.
+        </motion.p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-4xl mx-auto">
+          {[
+            {
+              label: "Email",
+              value: "muhammadawaisjaved388@gmail.com",
+              href: "mailto:muhammadawaisjaved388@gmail.com",
+              icon: <MdEmail size={26} />,
+            },
+            {
+              label: "GitHub",
+              value: "awiasjaved",
+              href: "https://github.com/awiasjaved",
+              icon: <SiGithub size={26} />,
+            },
+            {
+              label: "LinkedIn",
+              value: "Muhammad Awais",
+              href: "https://www.linkedin.com/in/muhammad-awais-436459222/",
+              icon: <SiLinkedin size={26} />,
+            },
+            {
+              label: "WhatsApp",
+              value: "+92 305 7359818",
+              href: "https://wa.me/923057359818",
+              icon: <FaWhatsapp size={26} />,
+            },
+          ].map((c, i) => (
+            <motion.a
+              key={c.label}
+              href={c.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              whileHover={{ y: -5 }}
+              className={`rounded-2xl border p-6 flex flex-col items-center gap-3 transition-colors ${panelBorder} ${panel}`}
+            >
+              <div style={{ color: gold }}>{c.icon}</div>
+              <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: gold }}>
+                {c.label}
+              </p>
+              <p className={`text-xs break-all ${textMuted}`}>{c.value}</p>
+            </motion.a>
+          ))}
         </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+          className={`mt-16 text-sm italic font-[family-name:var(--font-serif)] ${textMuted}`}
+        >
+          &ldquo;Good code, like good design, should feel inevitable.&rdquo;
+        </motion.p>
       </section>
     </main>
   );
