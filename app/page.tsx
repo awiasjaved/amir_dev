@@ -104,19 +104,8 @@ const PROJECTS = [
 ];
 
 const OTHER_REPOS = [
-  { url: "https://github.com/awiasjaved/alsaeed_back", company: false },
-  { url: "https://github.com/awiasjaved/alsaeed_portal", company: false },
-  { url: "https://github.com/awiasjaved/awais-Dev", company: false },
-  { url: "https://github.com/awiasjaved/ai-recruitment-platform-frontend", company: false },
-  { url: "https://github.com/awiasjaved/sohail-autos-toba", company: false },
-  { url: "https://github.com/awiasjaved/DevSpire", company: false },
-  { url: "https://github.com/awiasjaved/yaseen_backend", company: false },
-  { url: "https://github.com/awiasjaved/ALSaeed_Foundation", company: false },
-  { url: "https://github.com/awiasjaved/phrmacy_app", company: false },
-  { url: "https://github.com/awiasjaved/little_mumins", company: false },
-  { url: "https://github.com/awiasjaved/little_mumins_backend", company: false },
-  { url: "https://github.com/AdaxionTech/heyginie_backend", company: true },
-  { url: "https://github.com/AdaxionTech/partner_portal", company: true },
+  { url: "https://github.com/Amir16sp/Yaseen-rent-car", company: false },
+  { url: "https://github.com/Amir16sp/Latest", company: false },
 ];
 
 interface Glow {
@@ -677,7 +666,7 @@ export default function Home() {
             {
               label: "GitHub",
               value: "hafizamirsaeed",
-              href: "https://github.com/hafizamirsaeed",
+              href: "https://github.com/Amir16sp",
               icon: <SiGithub size={26} />,
             },
             {
