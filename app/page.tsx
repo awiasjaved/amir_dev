@@ -220,7 +220,7 @@ export default function Home() {
           }`}
         >
           <span className="font-[family-name:var(--font-serif)] italic text-lg md:text-xl tracking-wide">
-            H. Amir Saeed
+            Hafiz Muhammad Amir Saeed
           </span>
 
           <div className="hidden md:flex items-center gap-10">
@@ -370,7 +370,7 @@ export default function Home() {
               style={{ boxShadow: `0 30px 60px -20px ${darkMode ? "rgba(0,0,0,0.6)" : "rgba(156,122,50,0.25)"}` }}
             >
               <Image
-                src="/images/awais-Dev.png"
+                src="/images/amir_dev.jpeg"
                 alt="Hafiz Muhammad Amir Saeed - MERN Stack Developer"
                 width={340}
                 height={420}
@@ -670,26 +670,26 @@ export default function Home() {
           {[
             {
               label: "Email",
-              value: "muhammadawaisjaved388@gmail.com",
-              href: "mailto:muhammadawaisjaved388@gmail.com",
+              value: "hafizamirsaeed906@gmail.com",
+              href: "mailto:hafizamirsaeed906@gmail.com",
               icon: <MdEmail size={26} />,
             },
             {
               label: "GitHub",
-              value: "awiasjaved",
-              href: "https://github.com/awiasjaved",
+              value: "hafizamirsaeed",
+              href: "https://github.com/hafizamirsaeed",
               icon: <SiGithub size={26} />,
             },
             {
               label: "LinkedIn",
-              value: "Muhammad Awais",
-              href: "https://www.linkedin.com/in/muhammad-awais-436459222/",
+              value: "Hafiz Muhammad Amir Saeed",
+              href: "https://www.linkedin.com/in/m-amir-saeed-saeed-ahmed-7729b130b/",
               icon: <SiLinkedin size={26} />,
             },
             {
               label: "WhatsApp",
-              value: "+92 305 7359818",
-              href: "https://wa.me/923057359818",
+              value: "+92 301 4005270",
+              href: "https://wa.me/923014005270",
               icon: <FaWhatsapp size={26} />,
             },
           ].map((c, i) => (
